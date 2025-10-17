@@ -1,4 +1,4 @@
-# 🚀 DB Swapper | Database Connection Manager
+# 🚀 DB Sync Manager | Database Connection Manager
 
 ![Go Version](https://img.shields.io/badge/Go-1.20%2B-blue)
 
