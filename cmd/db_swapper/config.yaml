@@ -1,0 +1,63 @@
+logger:
+  logger_level: "info"     # Уровень логирования (debug, info, warn, error)
+  logger_target: "file"    # Куда писать логи (file, console, both)
+  logger_file: "sync.log"  # Имя файла для логов (если target включает file)
+
+oracle:
+  host: "oracle-db.example.com"  # Хост Oracle
+  port: 1521                    # Порт Oracle
+  user: "sync_user"             # Пользователь Oracle
+  password: "oracle_password"   # Пароль Oracle
+  dbname: "ORCL"               # Имя базы данных Oracle
+  sslmode: "disable"           # Режим SSL (disable, require, verify-ca, verify-full)
+  timeout: 5                   # Таймаут подключения в секундах
+
+mariadb:
+  host: "mariadb.example.com"  # Хост MariaDB
+  port: 3306                  # Порт MariaDB
+  user: "sync_user"           # Пользователь MariaDB
+  password: "mariadb_password" # Пароль MariaDB
+  dbname: "sync_db"           # Имя базы данных MariaDB
+  sslmode: "disable"          # Режим SSL
+  timeout: 5                  # Таймаут подключения в секундах
+
+sync:
+  source:
+    table: "SOURCE_TABLE"     # Исходная таблица в Oracle (альтернатива - query)
+    # query: "SELECT * FROM..." # Альтернатива table - произвольный SQL запрос
+    columns:                 # Описание колонок (опционально)
+      - name: "ID"
+        dataType: "NUMBER"
+        isNullable: false
+        autoIncrement: false
+      - name: "NAME"
+        dataType: "VARCHAR2"
+        isNullable: true
+        autoIncrement: false
+    indexes:                 # Индексы (опционально)
+      - "IDX_NAME"
+    primaryKey: "ID"         # Первичный ключ (опционально)
+
+  target:
+    table: "target_table"    # Целевая таблица в MariaDB (альтернатива - query)
+    # query: "SELECT * FROM..." # Альтернатива table - произвольный SQL запрос
+    columns:                # Описание колонок (опционально)
+      - name: "id"
+        dataType: "BIGINT"
+        isNullable: false
+        autoIncrement: false
+      - name: "name"
+        dataType: "VARCHAR"
+        isNullable: true
+        autoIncrement: false
+
+  batch_size: 1000          # Размер пакета для вставки данных
+  temp_table_suffix: "_temp" # Суффикс для временных таблиц
+  buffer_size: 5000         # Размер буфера в памяти
+  sync_interval: "5m"       # Интервал синхронизации (5 минут)
+
+  post_procedure_list:      # Список процедур для выполнения после синхронизации
+    - procedure_name: "update_stats"
+      params: []
+    - procedure_name: "send_notification"
+      params: ["sync_completed", "source_to_target"]
